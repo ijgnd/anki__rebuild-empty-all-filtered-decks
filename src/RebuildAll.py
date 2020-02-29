@@ -1,13 +1,18 @@
-# -*- coding: utf-8 -*-
-# See github page to report issues or to contribute:
-# https://github.com/Arthaey/anki-rebuild-all
+# Add-on for Anki
 #
-# Also available for Anki at https://ankiweb.net/shared/info/1639597619
+# License: AGPLv3 (license of the original release, see
+#     https://web.archive.org/web/20200225134227/https://ankiweb.net/shared/info/1639597619
+#
+# This is a modification of Arthur's modification khonkhortisan's
+# port of Arthaey "Rebuild All & Empty All" which was originally released at
+# https://ankiweb.net/shared/info/1639597619
 #
 # Contributors:
-# - @Arthaey
-# - @ankitest
-# - @ArthurMilchior
+# - Arthaey Angosii, https://github.com/Arthaey
+# - ankitest
+# - ArthurMilchior
+# - ijgnd
+
 
 import threading
 from anki.cards import Card
