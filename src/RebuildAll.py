@@ -72,7 +72,7 @@ def _updateFilteredDecks(actionFuncName):
                     dynDeckIds.remove(deck.id)
                 else:
                     build_last.remove(dname)
-        if gc("prioritize most nested subdecks"):
+        if gc("build - prioritize most nested subdecks"):
             rebuilt_nested_first(dynDeckIds, actionFunc)    
         else:
             [actionFunc(did) for did in sorted(dynDeckIds)]

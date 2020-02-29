@@ -6,5 +6,5 @@
     "build last": [
         ""
         ],
-    "prioritize most nested subdecks": true
+    "build - prioritize most nested subdecks": true
 }
