@@ -14,11 +14,12 @@
 # - ijgnd
 
 
-import threading
-from anki.cards import Card
 import time
+
+from anki.cards import Card
 from anki.lang import _
 from anki.hooks import wrap
+
 from aqt import mw
 from aqt.deckbrowser import DeckBrowser
 from aqt.utils import tooltip
