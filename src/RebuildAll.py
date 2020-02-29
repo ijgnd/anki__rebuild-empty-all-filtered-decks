@@ -31,23 +31,57 @@ def gc(arg, fail=False):
     return fail
 
 
-def _updateFilteredDecks(actionFuncName):
-    dynDeckIds = [ d["id"] for d in mw.col.decks.all() if d["dyn"] ]
-    count = len(dynDeckIds)
+def rebuilt_nested_first(dynDeckIds, actionFunc):
+    nestedlevels = {}
+    for id in dynDeckIds:
+        deck = mw.col.decks.get(id)
+        n = deck['name'].count("::")
+        nestedlevels.setdefault(n, []).append(str(id))
+    for level in sorted(nestedlevels, key=nestedlevels.get, reverse=False):
+        for e in nestedlevels[level]:
+            actionFunc(e)
 
+
+def _updateFilteredDecks(actionFuncName):
+    dynDeckIds = sorted([d["id"] for d in mw.col.decks.all() if d["dyn"]])
+    count = len(dynDeckIds)
     if not count:
         tooltip("No filtered decks found.")
         return
-
     # should be one of "rebuildDyn" or "emptyDyn"
     actionFunc = getattr(mw.col.sched, actionFuncName)
-
     mw.checkpoint("{0} {1} filtered decks".format(actionFuncName, count))
     mw.progress.start()
-    [ actionFunc(did) for did in sorted(dynDeckIds) ]
+    if actionFuncName == "emptyDyn":
+        # [actionFunc(did) for did in sorted(dynDeckIds)]
+        for did in dynDeckIds:
+            actionFunc(did)
+    else:
+        build_first = gc("build first")
+        if build_first and isinstance(build_first, list):
+            for dname in build_first:
+                deck = mw.col.decks.byName(dname)
+                if deck and deck.id in dynDeckIds:
+                    actionFunc(deck.id)
+                    dynDeckIds.remove(deck.id)
+        build_last = gc("build last")
+        if build_last and isinstance(build_last, list):
+            for dname in build_last:
+                deck = mw.col.decks.byName(dname)
+                if deck and deck.id in dynDeckIds:
+                    dynDeckIds.remove(deck.id)
+                else:
+                    build_last.remove(dname)
+        if gc("prioritize most nested subdecks"):
+            rebuilt_nested_first(dynDeckIds, actionFunc)    
+        else:
+            [actionFunc(did) for did in sorted(dynDeckIds)]
+        if build_last:
+            for dname in build_last:
+                deck = mw.col.decks.byName(dname)
+                actionFunc(deck['id'])
     mw.progress.finish()
     tooltip("Updated {0} filtered decks.".format(count))
-
     mw.reset()
 
 
