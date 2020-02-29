@@ -63,16 +63,15 @@ def _addButtons(self):
 DeckBrowser._drawButtons = wrap(DeckBrowser._drawButtons, _addButtons, "before")
 DeckBrowser._linkHandler = wrap(DeckBrowser._linkHandler, _handleFilteredDeckButtons, "after")
 
-lastReview = None
 
+lastReview = None
 def postSched(self):
     global lastReview
-    delta = gc("time")
-    print("New Flush")
+    delta = gc("auto rebuild interval")
+    print("maybe auto rebuild filtered decks")
     if delta and (lastReview is None or time.time() > lastReview + delta):
-        print("doing it")
+        print("....doing it")
         _updateFilteredDecks("rebuildDyn")
         lastReview = time.time()
-
 Card.flushSched = wrap(Card.flushSched, postSched)
 Card.sched = wrap(Card.flush, postSched)
