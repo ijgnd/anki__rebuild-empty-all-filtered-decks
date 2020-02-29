@@ -17,7 +17,14 @@ from anki.hooks import wrap
 from aqt import mw
 from aqt.deckbrowser import DeckBrowser
 from aqt.utils import tooltip
-from .config import getUserOption
+
+
+def gc(arg, fail=False):
+    conf = mw.addonManager.getConfig(__name__)
+    if conf:
+        return conf.get(arg, fail)
+    return fail
+
 
 def _updateFilteredDecks(actionFuncName):
     dynDeckIds = [ d["id"] for d in mw.col.decks.all() if d["dyn"] ]
@@ -60,7 +67,7 @@ lastReview = None
 
 def postSched(self):
     global lastReview
-    delta = getUserOption("time")
+    delta = gc("time")
     print("New Flush")
     if delta and (lastReview is None or time.time() > lastReview + delta):
         print("doing it")
