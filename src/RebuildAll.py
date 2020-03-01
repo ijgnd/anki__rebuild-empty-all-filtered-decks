@@ -38,7 +38,8 @@ def rebuilt_nested_first(dynDeckIds, actionFunc):
         deck = mw.col.decks.get(id)
         n = deck['name'].count("::")
         nestedlevels.setdefault(n, []).append(str(id))
-    for level in sorted(nestedlevels, key=nestedlevels.get, reverse=False):
+    #for level in sorted(nestedlevels, key=nestedlevels.get, reverse=False):
+    for level in sorted(nestedlevels.keys(), reverse=True):
         for e in nestedlevels[level]:
             actionFunc(e)
 
