@@ -105,6 +105,9 @@ DeckBrowser._drawButtons = wrap(DeckBrowser._drawButtons, _addButtons, "before")
 DeckBrowser._linkHandler = wrap(DeckBrowser._linkHandler, _handleFilteredDeckButtons, "after")
 
 
+# config.md: - `auto rebuild interval`: the number of seconds between two recomputation of the filters. Or null if it's not activated.
+# config.json: "auto rebuild interval": null,
+# ankiweb.html: This version also includes Arthur's <a href="https://github.com/Arthur-Milchior/anki-rebuild-all/commits/delta" rel="nofollow">recent addition</a> to rebuild periodically automatically rebuilt the filtered decks.
 lastReview = None
 def postSched(self):
     global lastReview
