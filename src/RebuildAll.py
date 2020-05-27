@@ -63,15 +63,15 @@ def _updateFilteredDecks(actionFuncName):
         if build_first and isinstance(build_first, list):
             for dname in build_first:
                 deck = mw.col.decks.byName(dname)
-                if deck and deck.id in dynDeckIds:
-                    actionFunc(deck.id)
-                    dynDeckIds.remove(deck.id)
+                if deck and deck["id"] in dynDeckIds:
+                    actionFunc(deck["id"])
+                    dynDeckIds.remove(deck["id"])
         build_last = gc("build last")
         if build_last and isinstance(build_last, list):
             for dname in build_last:
                 deck = mw.col.decks.byName(dname)
-                if deck and deck.id in dynDeckIds:
-                    dynDeckIds.remove(deck.id)
+                if deck and deck["id"] in dynDeckIds:
+                    dynDeckIds.remove(deck["id"])
                 else:
                     build_last.remove(dname)
         if gc("build - prioritize most nested subdecks"):
@@ -112,9 +112,8 @@ lastReview = None
 def postSched(self):
     global lastReview
     delta = gc("auto rebuild interval")
-    print("maybe auto rebuild filtered decks")
     if delta and (lastReview is None or time.time() > lastReview + delta):
-        print("....doing it")
+        print("....auto rebuilding filtered decks")
         _updateFilteredDecks("rebuildDyn")
         lastReview = time.time()
 Card.flushSched = wrap(Card.flushSched, postSched)
