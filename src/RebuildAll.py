@@ -13,7 +13,7 @@
 # - ArthurMilchior
 # - ijgnd
 
-
+import importlib
 import time
 
 from anki.cards import Card
@@ -22,6 +22,9 @@ from anki.hooks import wrap
 
 from aqt import mw
 from aqt.deckbrowser import DeckBrowser
+from aqt.gui_hooks import (
+    profile_did_open
+)
 from aqt.utils import tooltip
 
 
@@ -30,6 +33,30 @@ def gc(arg, fail=False):
     if conf:
         return conf.get(arg, fail)
     return fail
+
+
+slacker_is_imported = False
+def slacker_check():
+    global slacker_is_imported
+    global slacker_did
+    # Slackers' Delight (Postpone/Defer Button), https://ankiweb.net/shared/info/880824023
+    # verison 2020-02-27
+    # when Slacker's delight is installed emptying/rebuilding never finishes and you can't
+    # the progress dialog prevents you from closing the underlying info window so that
+    # Anki is blocked/unuseable.
+    # https://forums.ankiweb.net/t/rebuild-all-empty-all-filtered-decks-enhanced-fork-official-thread/557/2
+    try:
+        slackers = importlib.import_module('880824023')
+    except:
+        return
+    else:
+        slacker_is_imported = True
+    
+    try:
+        slacker_did = slackers.main.sd.getDynId()
+    except:
+        slacker_did = None
+profile_did_open.append(slacker_check)
 
 
 def rebuilt_nested_first(dynDeckIds, actionFunc):
@@ -46,6 +73,8 @@ def rebuilt_nested_first(dynDeckIds, actionFunc):
 
 def _updateFilteredDecks(actionFuncName):
     dynDeckIds = sorted([d["id"] for d in mw.col.decks.all() if d["dyn"]])
+    if slacker_is_imported and slacker_did:
+        dynDeckIds.remove(slacker_did)
     count = len(dynDeckIds)
     if not count:
         tooltip("No filtered decks found.")
